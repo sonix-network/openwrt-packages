@@ -1,0 +1,4 @@
+# Preserve unwedge configuration and TLS material (certs/keys) across sysupgrade.
+# sysupgrade's list_static_conffiles runs `find` over these paths, so the
+# directory entry recursively keeps config.yaml and any server/ca/client certs.
+/etc/unwedge

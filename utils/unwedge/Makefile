@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=unwedge
-PKG_VERSION:=0.8.1
+PKG_VERSION:=0.10.1
 PKG_RELEASE:=1
 
 NODE_ARCH:=$(subst x86_64,amd64,$(ARCH))
@@ -17,9 +17,9 @@ PKG_SOURCE:=unwedge-$(PKG_VERSION)-linux-$(NODE_ARCH).tar.gz
 PKG_SOURCE_URL:=https://github.com/sonix-network/unwedge/releases/download/v$(PKG_VERSION)
 PKG_SOURCE_VERSION:=0
 PKG_SOURCE_DATE:=2026-07-04
-PKG_HASH_mips64:=347d3ad5e9ce48635457206e3f1e10c7922a255122300187be0d6310e3a9dcc7
-PKG_HASH_amd64:=eb264aa4d5c5a295fb813163a06c8d978bc57006334cb7013287cf43a771328d
-PKG_HASH_arm64:=1d3db71acae9c148dbf017b66be531bc630201e6251f98ccabbe35289732ef9a
+PKG_HASH_mips64:=93f860e091cdf8b8b788585c517c1dd0bfd744ef34d8e3bb4abb845580b831a6
+PKG_HASH_amd64:=33b9db44e58bb8b602aabf8cd9c62f5839409e22f2e0bcf4b3b4e425bf992b63
+PKG_HASH_arm64:=544ffab6734685534a7baf8bf9485d19be7d2b97bad8f1f8b36558c7b8ae6ddd
 PKG_HASH:=$(PKG_HASH_$(NODE_ARCH))
 
 PKG_MAINTAINER:=SONIX <blue@cmd.nu>
@@ -51,11 +51,13 @@ define Build/Compile
 endef
 
 define Package/unwedge/install
-	$(INSTALL_DIR) $(1)/usr/bin $(1)/etc/init.d $(1)/etc/unwedge
+	$(INSTALL_DIR) $(1)/usr/bin $(1)/etc/init.d $(1)/etc/unwedge $(1)/lib/upgrade/keep.d
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/unwedged $(1)/usr/bin/unwedged
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/unwedge $(1)/usr/bin/unwedge
 	$(INSTALL_BIN) ./files/unwedge.init $(1)/etc/init.d/unwedge
 	$(INSTALL_CONF) ./files/config.yaml $(1)/etc/unwedge/config.yaml
+	# Preserve /etc/unwedge (config + admin-generated TLS certs) across sysupgrade.
+	$(INSTALL_DATA) ./files/unwedge.keep $(1)/lib/upgrade/keep.d/unwedge
 endef
 
 $(eval $(call BuildPackage,unwedge))
